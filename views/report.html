@@ -13,10 +13,10 @@
 <body>
 <h1>Report</h1>
 
-<br>
-<button onclick="getFeeds()">GetFeed</button>
-<button onclick="drawchart()">Draw Chart</button>
-<br>
+<!--<br>-->
+<!--<button onclick="getFeeds()">GetFeed</button>-->
+<!--<button onclick="drawchart()">Draw Chart</button>-->
+<!--<br>-->
 
 <div>
     <br>
@@ -29,9 +29,13 @@
   window.seconds = [];
   window.maxSecond = 1;
   window.setInterval(autoRefresh, 5000);
+  let lock = false;
   function autoRefresh() {
-    getFeeds();
-    drawchart();
+    if(lock === false){
+      lock = true;//lock it
+      getFeeds();
+
+    }
   }
   var ctx = document.getElementById("distraction");
   function getFeeds() {
@@ -41,15 +45,17 @@
       window.seconds = data.seconds;
       window.distractions = data.distractions;
       window.maxSecond = data.maxSecond;
+      drawchart();
     });
   }
   function drawchart() {
     console.log("draw");
     let sortedSeconds = window.seconds.slice();
     let sortedDistractions = window.distractions.slice();
-    bubbleSort(sortedSeconds,sortedDistractions);
-    console.log("sortedSeconds -", sortedSeconds);
-    console.log("sortedDistractions -", sortedDistractions);
+    bubbleSort(sortedSeconds, sortedDistractions);
+
+//    console.log("sortedSeconds -", sortedSeconds);
+//    console.log("sortedDistractions -", sortedDistractions);
     var myLineChart = new Chart(ctx, {
       type: 'line',
       data: {
@@ -59,7 +65,7 @@
           label: "distraction per second",
           borderColor: "#3e95cd",
           fill: true,
-          backgroundColor:"red"
+          backgroundColor: "red"
         }
         ]
       },
@@ -70,16 +76,17 @@
         }
       }
     });
-    if(window.distractions.length>0){
+    if (window.distractions.length > 0) {
       let sum = window.distractions.reduce((previous, current) => current += previous);
-      console.log("sum ",sum);
+      console.log("sum ", sum);
       let avg = sum / window.maxSecond; //window.distractions.length;
-      console.log("avg ",avg);
+      console.log("avg ", avg);
       let percent = 100 - avg;
       $("div#attentiveness").text("User Attentiveness = " + percent + "%");
     }
     else
       $("div#attentiveness").text("User Attentiveness = " + 0 + "%");
+    lock = false;//release
   }
   // swap function helper
   function swap(array, i, j) {
@@ -87,20 +94,20 @@
     array[i] = array[j];
     array[j] = temp;
   }
-  function bubbleSort(array1,array2) {
-    console.log("array1 = ",array1);
-    console.log("array2 = ",array2);
+  function bubbleSort(array1, array2) {
+    console.log("array1 = ", array1);
+    console.log("array2 = ", array2);
     var swapped;
     do {
       swapped = false;
-      for(var i = 0; i < array1.length; i++) {
-        if(array1[i] && array1[i + 1] && array1[i] > array1[i + 1]) {
+      for (var i = 0; i < array1.length; i++) {
+        if (array1[i] && array1[i + 1] && array1[i] > array1[i + 1]) {
           swap(array1, i, i + 1);
           swap(array2, i, i + 1);
           swapped = true;
         }
       }
-    } while(swapped);
+    } while (swapped);
     return array1;
   }
 
