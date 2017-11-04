@@ -17,7 +17,7 @@ open http://localhost:3000/report in browser. It provides the user attentiveness
 
 GET  - http://localhost:3000/feeds
     Returns the distractions count and timestamp in seconds. This will be used to generate the reports.
-    
+
 POST - http://localhost:3000/feeds
     index.html will push the captured distraction events to server. Server will store that info. Ideally in future store that into DB or push it to the other system.
     as of now we are not getting distraction event type. But can be added later
@@ -37,5 +37,6 @@ POST - http://localhost:3000/feeds
         }
 
 POST - http://localhost:3000/feeds/reset
+
     This to reset the report. More of a temporary solution. It won't required when we get the feeds with browser session id and user id.
     Added mainly for demo purpose.
