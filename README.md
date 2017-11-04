@@ -16,9 +16,11 @@ open http://localhost:3000/report in browser. It provides the user attentiveness
 ### API - Endpoints
 
 GET  - http://localhost:3000/feeds
+
     Returns the distractions count and timestamp in seconds. This will be used to generate the reports.
 
 POST - http://localhost:3000/feeds
+
     index.html will push the captured distraction events to the server. The server will store that info. Ideally in future store that into DB or push it to the other system.
     As of now, we are not getting distraction event type. The same can be added later
 
