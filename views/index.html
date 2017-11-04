@@ -62,8 +62,8 @@
       "showInAdControlBar": false,
       // "autoplay":true,
       "skin": {
-        //http://player.ooyala.com/static/v4/production/latest/skin-plugin/skin.json
-        "config": "https://raw.githubusercontent.com/PlaybackWebTest/JsonFiles/PlayerSkin/stickytest.json" //"prod_latest.skin.json" //no error but ad is not displaying.
+        "config": "http://player.ooyala.com/static/v4/production/latest/skin-plugin/skin.json" //"prod_latest.skin.json" //no error but ad is not displaying.
+//        "config": "https://raw.githubusercontent.com/PlaybackWebTest/JsonFiles/PlayerSkin/stickytest.json" //"prod_latest.skin.json" //no error but ad is not displaying.
 
       },
       onCreate: window.onCreate,
@@ -155,41 +155,12 @@
       $.post("http://localhost:3000/feeds",
         {
           count: window.mousecount,
-          second: window.second
+          second: parseInt(pp.getPlayheadTime()) //window.second
         },
         function (data, status) {
           console.log("Data: " + data + "\nStatus: " + status);
         });
     }
-
-    function drawchart() {
-      console.log("draw");
-
-      var myLineChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: window.seconds,
-          datasets: [{
-            data: window.mouselist,
-            label: "distraction per second",
-            borderColor: "#3e95cd",
-            fill: false
-          }
-          ]
-        },
-        options: {
-          title: {
-            display: true,
-            text: 'Representation of the user focus on the player'
-          }
-        }
-      });
-      let sum = window.mouselist.reduce((previous, current) => current += previous);
-      let avg = sum / window.mouselist.length;
-      let percent = 100 - avg;
-      $("div#focuspercentage").text("Focus % = " + percent + "%");
-    }
-
 
     var signsOfWindowLife = Bacon.mergeAll(
       $(window).asEventStream('focus'),

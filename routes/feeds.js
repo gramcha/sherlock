@@ -2,15 +2,18 @@ var express = require('express');
 var router = express.Router();
 let distractions = [];
 let seconds = [];
+let maxSecond = 1;
 /* GET users listing. */
 router.get('/', function (req, res, next) {
-  res.send({"distractions": distractions, "seconds": seconds});
+  res.send({"distractions": distractions, "seconds": seconds,"maxSecond":maxSecond});
 });
 
 router.post('/', function (req, res, next) {
   console.log("req", req.body);
   distractions.push(parseInt(req.body.count));
-  seconds.push(parseInt(req.body.second));
+  let second = parseInt(req.body.second);
+  maxSecond = second > maxSecond ? second : maxSecond;
+  seconds.push(second);
   res.send('done');
 });
 
