@@ -5,7 +5,9 @@
 ## Getting Started
 
 npm install
+
 npm run start
+
 #### http://localhost:3000/
 open http://localhost:3000/ in browser. It will load the page which contains some ooyala player and text contents.
 #### http://localhost:3000/report
@@ -15,15 +17,20 @@ open http://localhost:3000/report in browser. It provides the user attentiveness
 
 GET  - http://localhost:3000/feeds
     Returns the distractions count and timestamp in seconds. This will be used to generate the reports.
+    
 POST - http://localhost:3000/feeds
     index.html will push the captured distraction events to server. Server will store that info. Ideally in future store that into DB or push it to the other system.
     as of now we are not getting distraction event type. But can be added later
+
     Body:
+
         {
             "count": distraction_event_count
             "second": playback_second
         }
+
     Example :
+
         {
             "count": distraction_event_count
             "second": playback_event_second
