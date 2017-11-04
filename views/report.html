@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>sherlock report</title>
+    <script
+            src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.js"></script>
+
+</head>
+<body>
+<h1>Report</h1>
+
+<br>
+<button onclick="getFeeds()">GetFeed</button>
+<button onclick="drawchart()">Draw Chart</button>
+<br>
+
+<div>
+    <br>
+    <div id="attentiveness"></div>
+    <br>
+    <canvas id="distraction"></canvas>
+</div>
+<script>
+  window.distractions = [];
+  window.seconds = [];
+  window.setInterval(autoRefresh, 5000);
+  function autoRefresh() {
+    getFeeds();
+    drawchart();
+  }
+  var ctx = document.getElementById("distraction");
+  function getFeeds() {
+    $.get("http://localhost:3000/feeds", function (data, status) {
+      console.log("Data: ", data);
+//      data = JSON.parse(data);
+      window.seconds = data.seconds;
+      window.distractions = data.distractions;
+    });
+  }
+  function drawchart() {
+    console.log("draw");
+
+    var myLineChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: window.seconds,
+        datasets: [{
+          data: window.distractions,
+          label: "distraction per second",
+          borderColor: "#3e95cd",
+          fill: true
+        }
+        ]
+      },
+      options: {
+        title: {
+          display: true,
+          text: 'Representation of the user attentiveness on the video asset'
+        }
+      }
+    });
+    if(window.distractions.length>0){
+      let sum = window.distractions.reduce((previous, current) => current += previous);
+      console.log("sum ",sum);
+      let avg = sum / window.distractions.length;
+      console.log("avg ",avg);
+      let percent = 100 - avg;
+      $("div#attentiveness").text("User Attentiveness = " + percent + "%");
+    }
+    else
+      $("div#attentiveness").text("User Attentiveness = " + 0 + "%");
+  }
+</script>
+</body>
+</html>
