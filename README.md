@@ -1,7 +1,7 @@
 # Sherlock
 
  Deduces the user attentiveness on the video playback. Provides the distraction event counts and its type. It will detect browser focus, mouse click, scroll and touch events. These distractions are mapped into the playback time stamp seconds.
- Feeds will be send to feeds api only when player in playing state. All the distraction events are captured using Bacon JS lib. Mozilla page visibility API is used to stop playback when user switch tabs. The player will player resume play state when user comeback to player tab.
+ Feeds will be sent to feeds API only when the player in playing state. All the distraction events are captured using the Bacon JS lib. Mozilla page visibility API is used to stop playback when the user switches tabs. The player will resume playing state when the user comes back to player browser tab.
 ## Getting Started
 
 npm install
@@ -19,8 +19,8 @@ GET  - http://localhost:3000/feeds
     Returns the distractions count and timestamp in seconds. This will be used to generate the reports.
 
 POST - http://localhost:3000/feeds
-    index.html will push the captured distraction events to server. Server will store that info. Ideally in future store that into DB or push it to the other system.
-    as of now we are not getting distraction event type. But can be added later
+    index.html will push the captured distraction events to the server. The server will store that info. Ideally in future store that into DB or push it to the other system.
+    As of now, we are not getting distraction event type. The same can be added later
 
     Body:
 
@@ -38,5 +38,5 @@ POST - http://localhost:3000/feeds
 
 POST - http://localhost:3000/feeds/reset
 
-    This to reset the report. More of a temporary solution. It won't required when we get the feeds with browser session id and user id.
+    This to reset the report. More of a temporary solution. It won't require when we get the feeds with browser session id and user id.
     Added mainly for demo purpose.
