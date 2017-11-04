@@ -233,12 +233,12 @@
     visibilityChange = "webkitvisibilitychange";
   }
   function handleVisibilityChange() {
-    if (document[hidden] && pp.getState() === "playing") {
+    if (document[hidden] /*&& pp.getState() === "playing"*/) {
       pp.pause();
     } else {
-      if (pp.getState() === "paused") {
+//      if (pp.getState() === "paused") {
         pp.play();
-      }
+//      }
     }
   }
 
