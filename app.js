@@ -16,7 +16,9 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine','html');
 // Set HTML engine
 app.engine('html', require('ejs').renderFile);
-
+app.get('/sherlock.js',function(req,res){
+  res.sendFile(path.join(__dirname + '/views/sherlock.js'));
+});
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));

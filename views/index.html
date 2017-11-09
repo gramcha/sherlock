@@ -8,26 +8,25 @@
             padding: 10px;
         }
     </style>
-    <script
-            src="https://code.jquery.com/jquery-3.2.1.min.js"
-            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-            crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bacon.js/0.7.95/Bacon.min.js">
-    </script>
+    <!--<script-->
+            <!--src="https://code.jquery.com/jquery-3.2.1.min.js"-->
+            <!--integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="-->
+            <!--crossorigin="anonymous"></script>-->
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/bacon.js/0.7.95/Bacon.min.js">-->
+    <!--</script>-->
     <script src="//player.ooyala.com/static/v4/production/latest/core.min.js"></script>
     <script src="//player.ooyala.com/static/v4/production/latest/skin-plugin/html5-skin.min.js"></script>
     <link rel="stylesheet" href="//player.ooyala.com/static/v4/production/latest/skin-plugin/html5-skin.min.css"/>
     <script src="//player.ooyala.com/static/v4/production/latest/video-plugin/main_html5.min.js"></script>
     <script src="//player.ooyala.com/static/v4/production/latest/video-plugin/bit_wrapper.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.js"></script>
+    <script src="http://localhost:3000/sherlock.js"></script>
 </head>
 <body>
 
 <div id="container" style="margin:0 auto;width:490px; height:auto"></div>
-<!--<div>-->
-<!--<textarea id="sherlock" rows="30" cols="100" style="margin:0 auto">-->
-<!--</textarea>-->
-<!--</div>-->
+<script>
+//  console.log('1 plugin -',$(window).asEventStream('focus'));
+</script>
 
 <script type="text/javascript">
   function onCreate(player) {
@@ -54,6 +53,7 @@
   }
 
   OO.ready(function () {
+    console.log("ready");
     var playerParam = {
       //Find this under Account - Developers in Backlot
       "pcode": "IycGoyOgSy6HP-yx47T66NFFtXdn",
@@ -82,147 +82,510 @@
       "embedToken": "//player.ooyala.com/sas/embed_token/IycGoyOgSy6HP-yx47T66NFFtXdn/pxZnhtYjE6QtDxaRxY624rgqJP-kc0l7?api_key=IycGoyOgSy6HP-yx47T66NFFtXdn.V_Yu7&expires=1506815027&signature=amvZnV7tjV7ZtOMOGsvIaZU8LsqScghJePp7vDnrUmA&override_syndication_group=override_synd_groups_in_backlot"
     };
 
-    //DIV ID, BACKLOT CONTENT ID, PLAYER PARAMETERS
-    resetFeed();
+
+
     window.pp = OO.Player.create('container', "I0anFwYjE6rEHjyW7q8BreRqOhBGXObr", playerParam);//cc supported embed code pxZnhtYjE6QtDxaRxY624rgqJP-kc0l7 with blue color setting in backlot
 
     window.intialBoundary = document.getElementById('container').getBoundingClientRect();
-    // console.log("initialBoundary - ", initialBoundary);
-
   });
-  console.log("bacon");
-
-  //Below commented code is to catch the distraction events on player boundary
-  //  var signsOfLife = Bacon.mergeAll(
-  //    $('#container').asEventStream('focus'),
-  //    $('#container').asEventStream('click'),
-  //    $('#container').asEventStream('scroll'),
-  //    $('#container').asEventStream('mousemove'),
-  //    $('#container').asEventStream('touchstart'),
-  //    $('#container').asEventStream('touchend'),
-  //    $('#container').asEventStream('touchcancel'),
-  //    $('#container').asEventStream('touchleave'),
-  //    $('#container').asEventStream('touchmove')
-  //  );
-  //  var TIMEOUT = 5000;
-  //  console.log("signsOfLife ", signsOfLife);
-  //  function decayingStream() {
-  //    // if(window.recentlyActive)
-  //    // 	console.log("window.recentlyActive ",window.recentlyActive);
-  //    // console.log("decay");
-  //    return Bacon.once(true).merge(Bacon.once(false).delay(TIMEOUT));
-  //  }
-  //  window.recentlyActive = signsOfLife
-  //    .flatMapLatest(decayingStream)
-  //    .toProperty(true);
-  //  signsOfLife.onValue(function (val) {
-  //    var events = "Event: " + val.type + ", Target Element: " + val.target.getAttribute('class') + ", Player State: " + pp.getState() + " \n";
-  //    $('#sherlock').val($('#sherlock').val() + events);
-  //    window.eval = val;
-  //    // console.log("sign changes:",val);
-  //  });
-
-//Distraction at window level
-  {
-    var intervalID = window.setInterval(feedTimer, 1000);
-    window.mouselist = [];
-    window.mousecount = 0;
-    window.seconds = [];
-    window.second = 1;
-    var ctx = document.getElementById("distraction");
-
-    function feedTimer() {
-      // Your code here
-      if (window.pp && pp.getState() === "playing") {
-        sendFeed();
-        window.mousecount = 0;
-        window.second++;
-      }
-    }
-
-    function resetFeed() {
-      $.post("http://localhost:3000/feeds/reset",
-        {
-          count: window.mousecount,
-          seconds: window.second
-        },
-        function (data, status) {
-          console.log("Data: " + data + "\nStatus: " + status);
-        });
-    }
-
-    function sendFeed() {
-      $.post("http://localhost:3000/feeds",
-        {
-          count: window.mousecount,
-          second: parseInt(pp.getPlayheadTime()) //window.second
-        },
-        function (data, status) {
-          console.log("Data: " + data + "\nStatus: " + status);
-        });
-    }
-
-    var signsOfWindowLife = Bacon.mergeAll(
-      $(window).asEventStream('focus'),
-      $(window).asEventStream('click'),
-      $(window).asEventStream('scroll'),
-      $(window).asEventStream('mousemove'),
-      $(window).asEventStream('touchstart'),
-      $(window).asEventStream('touchend'),
-      $(window).asEventStream('touchcancel'),
-      $(window).asEventStream('touchleave'),
-      $(window).asEventStream('touchmove')
-    );
-    var TIMEOUT = 5000;
-    console.log("signsOfLife ", signsOfWindowLife);
-//    function decayingStream2() {
-//       return Bacon.once(true).merge(Bacon.once(false).delay(TIMEOUT));
-//    }
-//
-//    window.recentlyActive2 = signsOfWindowLife
-//      .flatMapLatest(decayingStream2)
-//      .toProperty(true);
-    signsOfWindowLife.onValue(function (val) {
-      window.mousecount = window.mousecount + 1;
-    });
-  }
-
-  //Below part is to execute the below feature when tab switching happens
-  // If the page is hidden, pause the video;
-  // if the page is shown, play the video
-  console.log("page visibility api");
-  // Set the name of the hidden property and the change event for visibility
-  var hidden, visibilityChange;
-  if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support
-    hidden = "hidden";
-    visibilityChange = "visibilitychange";
-  } else if (typeof document.msHidden !== "undefined") {
-    hidden = "msHidden";
-    visibilityChange = "msvisibilitychange";
-  } else if (typeof document.webkitHidden !== "undefined") {
-    hidden = "webkitHidden";
-    visibilityChange = "webkitvisibilitychange";
-  }
-  function handleVisibilityChange() {
-    if (document[hidden] /*&& pp.getState() === "playing"*/) {
-      pp.pause();
-    } else {
-//      if (pp.getState() === "paused") {
-        pp.play();
-//      }
-    }
-  }
-
-  // Warn if the browser doesn't support addEventListener or the Page Visibility API
-  if (typeof document.addEventListener === "undefined" || typeof document[hidden] === "undefined") {
-    console.log("This demo requires a browser, such as Google Chrome or Firefox, that supports the Page Visibility API.");
-  } else {
-    // Handle page visibility change
-    document.addEventListener(visibilityChange, handleVisibilityChange, false);
-  }
 
 </script>
 
+<div>
+    <div id="s-lg-box-626063" class="s-lib-box s-lib-box-std">
+        <h2 class="s-lib-box-title">Links to News Databases
+        </h2>
+        <div id="s-lg-box-collapse-626063">
+            <div class="s-lib-box-content">
 
+                <div id="s-lg-content-1167568" class="  clearfix">
+                    <table border="1" cellpadding="10">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <p><strong><a href="http://www.abyznewslinks.com/" target="_blank">ABYZ News
+                                    Links</a></strong>.<br>
+                                    [http://www.abyznewslinks.com/]; open access.<br>
+                                    A collection of links to news sites worldwide. Coverage: Mainly current issues; some
+                                    searchable archives; see individual sources. Includes some streaming video and
+                                    audio; television, radio, and online news sources. Many languages.</p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/6299412" target="_blank">Access
+                                    Newspaper Archive</a></strong> [aka <b>newspaperarchive.com</b>].<br>
+                                    [http://resolver.library.cornell.edu/misc/6299412]; subscription.<br>
+                                    Coverage: 19th and 20th centuries. Primarily U.S. small town and small city
+                                    newspapers. Also contains long runs of some international titles. B&amp;W PDFs.
+                                    Mainly in English; ten French titles (from France).<br>
+                                    Use tip: Searchers discovering titles on the open internet will not see the database
+                                    name, <i>Access Newspaper Archive</i>, only the URL above.</p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/5656506" target="_blank">Access
+                                    World News</a></strong>. (called America's Newspapers before 2005)<br>
+                                    [http://resolver.library.cornell.edu/misc/5656506]; subscription.<br>
+                                    Coverage: Current, from roughly the mid-1980s on (start dates vary widely). Over
+                                    4,700 newspapers and newswires, including some web-only titles. Also video from
+                                    local television news programs. Some international coverage, but mainly
+                                    Anglo-American titles (about 75% North American titles, 25% international). Includes
+                                    many smaller newspapers in the U.S. Plain text and video. Mainly in English; some
+                                    Spanish (<a href="http://infoweb.newsbank.com/?db=AWNB&amp;s_sources=ANOT"
+                                                target="_blank">see Acceda Noticias</a>).</p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/6231497" target="_blank">Accessible
+                                    Archives</a></strong>.<br>
+                                    [http://resolver.library.cornell.edu/misc/6231497]; subscription.<br>
+                                    Coverage: 18th and 19th centuries. Includes <em>African-American Newspapers</em> (9
+                                    titles), <em>Civil War Newspapers</em> (3 titles), and Ben Franklin's newspaper,&nbsp;
+                                    the <em>Pennsylvania Gazette</em> (1728-1800). Plain text.</p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/firs/4273365" target="_blank">AltPressIndex
+                                    [aka Alternative Press Index, 1991- ]</a> and <a
+                                        href="http://resolver.library.cornell.edu/misc/9922776" target="_blank">Alternative
+                                    Press Index Archive [1969-1990]</a></strong>. Baltimore: Alternative Press
+                                    Center.<br>
+                                    [API: http://resolver.library.cornell.edu/firs/4273365 / APIA:
+                                    http://resolver.library.cornell.edu/misc/9922776]; subscription.<br>
+                                    Coverage: 1969 to date. <em>Indexing only</em>. API and APIA can be searched
+                                    together in the EBSCO interface.</p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/4273487" target="_blank">Alt-PressWatch</a></strong>.
+                                    ProQuest.<br>
+                                    [http://resolver.library.cornell.edu/misc/4273487]; subscription.<br>
+                                    Coverage mainly mid-1990s to date; a few titles to 1970s. Plain text with some PDFs.
+                                </p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/5719541" target="_blank">America's
+                                    Historical Newspapers</a></strong>. Readex/NewsBank.<br>
+                                    [http://resolver.library.cornell.edu/misc/5719541]; subscription.<br>
+                                    "Including Early American Newspapers Series 1 and 6, 1690-1922 and African American
+                                    Newspapers, 1827-1998." Plain text and some images.</p>
+
+                                <p><strong><a href="http://www.aparchive.com/" target="_blank">AP Archive</a></strong>.
+                                    Associated Press.<br>
+                                    [http://www.aparchive.com/]; free with registration.<br>
+                                    Coverage: 1929 to date. Film and video from the Associated Press, ABC News, other
+                                    sources owned by AP. Many records available, but much remains to be digitized. <a
+                                            href="http://www.aparchive.com/ourcontent">Content information</a>.</p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/3823610" target="_blank">AP
+                                    Images</a></strong>. Associated Press.<br>
+                                    [http://resolver.library.cornell.edu/misc/3823610]; subscription.<br>
+                                    Coverage for images, 1915 to date. Images and graphics; some full text and streaming
+                                    audio.</p>
+
+                                <p><strong><a href="http://anno.onb.ac.at/" target="_blank">Austrian Newspapers Online:
+                                    ANNO</a></strong>. Wien: Österreichische Nationalbibliothek.<br>
+                                    [http://anno.onb.ac.at/]; open access.<br>
+                                    Coverage: Mainly 19th century; some more recent--see <a
+                                            href="http://anno.onb.ac.at/zeitungen.htm">title list</a>. Over 200
+                                    newspapers. PDFs. In German.</p>
+
+                                <p>
+                                    <a href="http://prensahistorica.mcu.es/en/estaticos/contenido.cmd?pagina=estaticos/presentacion"
+                                       target="_blank"><strong>Biblioteca Virtual de Prensa Historica </strong></a>(Virtual
+                                    Library of Historical Press)<br>
+                                    [http://prensahistorica.mcu.es/en/estaticos/contenido.cmd?pagina=estaticos/presentacion];
+                                    open access.<br>
+                                    Coverage varies by title: 1777 through the 20th century. PDFs. almost 2000
+                                    historical newspapers developed by the Spanish Ministry of Culture. In Spanish.
+                                    Search interface in English and several Spanish dialects. <a
+                                        href="http://prensahistorica.mcu.es/en/cms/elemento.cmd?idRoot=estaticos/paginas&amp;grupo=&amp;elemento=listado_ocr.html">List
+                                    of serials digitized</a>.</p>
+
+                                <p><strong><a href="http://catalog.crl.edu/" target="_blank">Center for Research
+                                    Libraries Catalog</a></strong>. You can limit by Newspapers. More information about
+                                    CRL's newspaper holdings <a href="http://www.crl.edu/content.asp?l1=5#newspapers"
+                                                                target="_blank">here</a>. See also entries for<em> ICON:
+                                        International Coalition on Newspapers</em> and <em>World Newspaper Archive</em>,
+                                    below.</p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/4288563" target="_blank">China
+                                    Core Newspaper Databases</a></strong>: CCND. Beijing: Tsinghua Tongfang Optical Disc
+                                    Co.<br>
+                                    http://resolver.library.cornell.edu/misc/4288563]; subscription.<br>
+                                    Coverage: 2000 to date. CAJ viewer download or PDFs that require Abode Font Pack
+                                    download. See also Kroch Asia's <a
+                                            href="http://asia.library.cornell.edu/ac/Wason/China/data_for_ch_journal">Academic
+                                        Journals and Newspapers page</a> for two additional Chinese news titles. In
+                                    Chinese.</p>
+
+                                <p>
+                                    <a href="http://encompass.library.cornell.edu/cgi-bin/checkIP.cgi?access=gateway_standard%26url=http://search.proquest.com/hnpchinesecollection?accountid=10267"
+                                       target="_blank"><strong>Chinese Newspapers Collection [ProQuest Historical
+                                        Newspapers]</strong>.</a><br>
+                                    [http://encompass.library.cornell.edu/cgi-bin/checkIP.cgi?access=gateway_standard%26url=http://search.proquest.com/hnpchinesecollection?accountid=10267];
+                                    subscription.<br>
+                                    Coverage: 1832-1953. PDFs. English only.</p>
+
+                                <p><a href="http://chroniclingamerica.loc.gov/newspapers/" target="_blank"><strong>Chronicling
+                                    America: Historic American Newspapers</strong>.</a><br>
+                                    [http://chroniclingamerica.loc.gov/newspapers/]; open access.<br>
+                                    A major searchable database of over eight million newspaper pages. Created by the
+                                    NEH, Library of Congress, the National Digital Newspaper Project, and their partners
+                                    in 32 states and DC.<br>
+                                    Coverage: 1836-1922. PDFs. Site also has <a
+                                            href="http://chroniclingamerica.loc.gov/search/titles/" target="_blank">a
+                                        searchable bibliography of US newspapers</a> published between 1690 and the
+                                    present. Ten languages represented: primarily English, but also Spanish, German,
+                                    French, and Italian.</p>
+                                <!-- <p><a href="http://cdsun.library.cornell.edu" _mce_href="http://cdsun.library.cornell.edu" mce_href="http://cdsun.library.cornell.edu" target="_blank">Cornell Daily Sun</a>. (Online: Ithaca, NY : Division of Rare and Manuscript Collections, Cornell University Library, [18XX]- . [http://cdsun.library.cornell.edu].</p> -->
+
+                                <p><a href="http://resolver.library.cornell.edu/misc/4265835" target="_blank"><strong>EastView
+                                    Universal Database</strong></a>. East View Publications.<br>
+                                    [http://resolver.library.cornell.edu/misc/4265835]; subscription.<br>
+                                    Includes <em>Current Digest of the Russian Press [was Current Digest of the (Post-)
+                                        Soviet Press]</em> (1949 to date, English translations), <a
+                                            href="http://encompass.library.cornell.edu/cgi-bin/checkIP.cgi?access=gateway_standard%26url=http://dlib.eastview.com/browse/udb/1"><em>Russian
+                                        Central Newspapers</em></a> in Russian and English, <em>Izvestiia Digital
+                                        Archive </em>(1917-2010), and <em>Pravda Digital Archive</em> (1912-2009).</p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/2086708" target="_blank">Ethnic
+                                    NewsWatch</a></strong>. ProQuest.<br>
+                                    [http://resolver.library.cornell.edu/misc/2086708]; subscription.<br>
+                                    Coverage: 1959 to date in two files. In English and Spanish. Plain text with some
+                                    PDFs. Publications by and for ethnic and minority groups.</p>
+
+                                <p><strong><a href="http://www.eurotopics.net/en/"
+                                              target="_blank">Euro|topics</a></strong>. Federal Agency for Civic
+                                    Education (Bundeszentrale für politische Bildung).<br>
+                                    [http://www.eurotopics.net/en/]; open access.<br>
+                                    Coverage: 12/8/2005 to date. A European press review. Plain text. English, German,
+                                    and French summaries for 28 European countries. Text is the translated lead
+                                    paragraph of the article. Some entries link to the full text online in original
+                                    language and some only to the source news site.</p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/4394263" target="_blank">Factiva</a></strong>.<br>
+                                    [http://resolver.library.cornell.edu/misc/4394263]; subscription.<br>
+                                    Coverage: Current. Back to 1980s for some titles. Primarily business news. Plain
+                                    text. English. The News Pages section shows articles from eight major news sources
+                                    for the last two weeks.</p>
+
+                                <p><a href="http://resolver.library.cornell.edu/misc/8625023" target="_blank"><strong>Financial
+                                    Times/FT.com</strong></a>. Financial Times Ltd.<br>
+                                    [http://resolver.library.cornell.edu/misc/8625023]; subscription.<br>
+                                    Coverage: Covers both <em>FT.com</em> and the <em>Financial Times</em> newspaper,
+                                    January 2006 to date. Web pages for <em>FT.com</em>. Full page, full color PDFs for
+                                    the newspaper. Available in five regional editions: UK, Europe, US, Asia, and Mid
+                                    East. Cornell students, staff and faculty will need to set up an account using their
+                                    @cornell.edu email address when using this resource for the first time.</p>
+
+                                <p><a href="http://resolver.library.cornell.edu/misc/7563970" target="_blank"><strong>Financial
+                                    Times Historical Archive</strong></a>. Gale Cengage Learning (EMEA).<br>
+                                    [http://resolver.library.cornell.edu/misc/7563970]; subscription<br>
+                                    Coverage: 1888 to 2010. Moving four-year embargo. For newer issues see the previous
+                                    entry, above. See also <a href="http://resolver.library.cornell.edu/misc/7782990"
+                                                              target="_blank">Gale NewsVault</a>, below, for
+                                    cross-searching Gale newspaper archives.</p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/6299594" target="_blank">Foreign
+                                    Broadcast Information Service (FBIS) Daily Reports</a></strong>.<br>
+                                    [http://resolver.library.cornell.edu/misc/6299594]; subscription.<br>
+                                    Coverage: 1974-1996. Includes television and radio. English translations of content
+                                    from news sources worldwide. Plain text. Continued by <a
+                                            href="http://resolver.library.cornell.edu/misc/2887918" target="_blank">World
+                                        News Connection</a>. <a href="/ref/fbisguide.html">More information about
+                                        FBIS.</a> Original content in many languages.</p>
+
+                                <p><a href="http://resolver.library.cornell.edu/misc/7782990" target="_blank"><strong>Gale
+                                    NewsVault</strong></a>. Gale Cengage.<br>
+                                    [http://resolver.library.cornell.edu/misc/7782990]; subscription<br>
+                                    Coverage: 1604 to 2011. Platform for cross searching the following Gale news
+                                    archives: 17th - 18th Century <i>Burney Collection</i> Newspapers, <i>The
+                                        Economist</i> Historical Archive, the <i>Financial Times</i> Historical Archive,
+                                    <em>The Times</em> [of London] Digital Archive, The <em>Sunday Times</em> [of
+                                    London] Digital Archive, and the <em>Times Literary Supplement</em> (TLS) Historical
+                                    Archive. See the <a href="http://resolver.library.cornell.edu/misc/7782990"
+                                                        target="_blank">NewsVault home page</a> for specific date
+                                    coverage.</p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/8797135" target="_blank">Gale:
+                                    Primary Sources [was Artemis: Primary Sources]</a></strong>. Gale Cengage.<br>
+                                    [http://resolver.library.cornell.edu/misc/8797135]; subscription.<br>
+                                    Cross-searches eighteen&nbsp;of Gale's online digital history&nbsp;resources. Click
+                                    on "See What's Inside: Learn More" to see the complete list of archives and the date
+                                    coverage for each archive. All of the news titles in <a
+                                            href="http://resolver.library.cornell.edu/misc/7782990" target="_blank">Gale
+                                        NewsVault</a>, below, are included plus additional collections with partial
+                                    newspaper content.</p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/5767480" target="_blank">Gallica:
+                                    Bibliothèque Numérique</a></strong>. Bibliothèque nationale de France.<br>
+                                    [http://resolver.library.cornell.edu/misc/5767480]; subscription.<br>
+                                    Twenty-six French newspapers.<br>
+                                    Coverage: Nineteenth century to about WWII. To search or browse, click on
+                                    Periodicals. [<a href="http://gallica.bnf.fr/html/editorial/presse-revues">http://gallica.bnf.fr/html/editorial/presse-revues</a>].
+                                    Searchable PDFs. In French.</p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/8826432" target="_blank">Gannett
+                                    Newsstand</a></strong><br>
+                                    [http://resolver.library.cornell.edu/misc/8826432]; subscription.<br>
+                                    U.S. newspapers published by the Gannett Corporation. Coverage from 1999 to date or
+                                    2002 to date for most of the 89 titles. Plain text. Part of NOVELNY, so continued
+                                    availability depends on state funding. <strong><a
+                                            href="http://search.proquest.com/gannettnews/publicationbrowse?accountid=10267">Title
+                                        list</a>.</strong></p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/3469540" target="_blank">GenderWatch</a></strong>.
+                                    ProQuest.<br>
+                                    [http://resolver.library.cornell.edu/misc/3469540]; subscription.<br>
+                                    Coverage: 1970s to date. PDFs and HTML. Includes newspapers and newsletters, but
+                                    also scholarly journals; magazines; regional publications; books; and NGO,
+                                    government, and special reports.</p>
+
+                                <p><strong><a href="http://news.google.com/" target="_blank">Google
+                                    News</a></strong><br>
+                                    [http://news.google.com/]; open access.<br>
+                                    Google News is searchable in a large number of "editions" (countries and languages).<br>
+                                    Archive in development. Enter <em>site:news.google.com/newspapers</em> in advanced
+                                    search to limit to scanned articles only. Searchable PDFs. Spotty coverage for most
+                                    titles, but some long runs of titles from the U.S., Canada, Australia, South Asia. A
+                                    browseable title list that includes years covered for each title is available: <a
+                                            href="http://news.google.com/newspapers" target="_blank">http://news.google.com/newspapers</a>
+                                </p>
+                                <!--
+                    <p><a href="http://resolver.library.cornell.edu/misc/aqy3186" target="_blank">Historical Newspapers Online</a>. Chadwyck-Healy.<br /> [http://resolver.library.cornell.edu/misc/aqy3186]; subscription.<br /> <em>Indexing only</em>. <em>Times</em> of London, 1785-1922; <em>New York Times</em>, 1851-1922.<br /><strong>Superseded: For the full-text and more years of coverage, see <a href="http://resolver.library.cornell.edu/misc/7563970" target="_blank">Times Digital Archive</a> and ProQuest Historical Newspapers (<em>The New York Times</em>), below</strong>.</p> -->
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/4752213" target="_blank">Infotrac
+                                    Newsstand</a></strong>. Gale. (was Custom Newspapers)<br>
+                                    [http://resolver.library.cornell.edu/misc/4752213]; subscription.<br>
+                                    Coverage: 1980 to date. Plain text. <a
+                                            href="ttp://www.gale.cengage.com/tlist/sb5100.pdf" target="_blank">Title
+                                        list here (pdf)</a></p>
+
+                                <p><a href="http://icon.crl.edu/search.php" target="_blank"><strong>ICON: International
+                                    Coalition on Newspapers</strong>: Titles Preserved through ICON.</a><br>
+                                    [http://icon.crl.edu/titles.htm]; open access.<br>
+                                    Bibliographic information only. List of international newspapers preserved on
+                                    microfilm. The Center for Research Libraries catalog includes specific holdings.
+                                    Titles available from CRL via ILL. <a href="http://icon.crl.edu/database.php"
+                                                                          target="_blank">ICON's searchable union list
+                                        of international newspapers; good historical data with preservation status and
+                                        holdings information.</a> Many languages.</p>
+
+                                <p><strong><a
+                                        href="hhttp://proxy.library.cornell.edu/login?url=http://search.proquest.com/publication/45737">Ithaca
+                                    Journal</a> and <a
+                                        href="http://proxy.library.cornell.edu/login?url=http://search.proquest.com/publication/26859">Press
+                                    &amp; Sun Bulletin (Binghamton)</a></strong>; subscription.<br>
+                                    Coverage: <em>Press &amp; Sun Bulletin</em>: 1/1/1999- ; <em>Ithaca Journal</em>:
+                                    8/9/1999- . Plain text.</p>
+
+                                <p><a href="http://resolver.library.cornell.edu/misc/3913703" target="_blank"><strong>Keesing's
+                                    World News Archive</strong>.</a><br>
+                                    [http://resolver.library.cornell.edu/misc/3913703]; subscription.<br>
+                                    News digest service. Coverage: 01/05/1931 to 09/01/2014. Plain text. </p>
+                                <!--
+                                <p><strong><a href="http://asia.library.cornell.edu/ac/Wason/Korea/Newspapers" target="_blank">Korean Newspapers</a></strong>.<br />
+                                [http://asia.library.cornell.edu/ac/Wason/Korea/Newspapers]; subscription.<br />
+                                Coverage: early 1900s to date; varies by title. Republic of Korea--8 titles. Democratic People&#39;s Republic of Korea--2 titles. Format varies. In Korean; one Korean/Japanese/Chinese/English title.</p>
+                    -->
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/6186153" target="_blank">Latin
+                                    American Newsstream</a></strong>. ProQuest.<br>
+                                    [http://resolver.library.cornell.edu/misc/6186153]; subscription.<br>
+                                    Coverage: Mostly mid 2000s to date, some late 1990s. Plain text. In Spanish and
+                                    Portuguese.<br>92 titles from Brazil, Mexico, Argentina, Costa Rica, Peru, Uruguay,
+                                    Chile, Colombia, Ecuador, Guatemala, Puerto Rico, and Venezuela. <a
+                                            href="http://http://search.proquest.com/latinamericanews1/publicationbrowse?accountid=10267">Title
+                                        list</a>.</p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/3126641" target="_blank">LexisNexis
+                                    Academic</a></strong>.<br>
+                                    [http://resolver.library.cornell.edu/misc/3126641]; subscription.<br>
+                                    Coverage: roughly 1980 to date. Includes television and radio. Plain text. Mainly
+                                    English and Western European languages. Use the <i>Search by Subject or Topic</i>
+                                    drop-down menu to choose News.</p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/6279917" target="_blank">Library
+                                    PressDisplay</a></strong>. ProQuest.<br>
+                                    [http://resolver.library.cornell.edu/misc/6279917]; subscription.<br>
+                                    Full-color PDFs. Coverage: latest 90 days. Many languages.</p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/9935631" target="_blank">Meet
+                                    the Press</a></strong>.<br>
+                                    [http://resolver.library.cornell.edu/misc/9935631]; subscription.<br>
+                                    Coverage: 1947 to 12/29/2013. More than 1,500 hours of streaming video (early years,
+                                    audio only) of this weekly news interview and debate program. Coverage during the
+                                    early years is incomplete.<br>
+                                    See also <em>Television News Archive</em>, below.</p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/5925460" target="_blank">Mideastwire.com</a></strong>.<br>
+                                    [http://resolver.library.cornell.edu/misc/5925460]; subscription.<br>
+                                    Coverage: Current. September 2005 to date. Selected articles from news sources and
+                                    newsletters. English translations from Arabic and Farsi. Plain text. Added links to
+                                    current source home page when available.</p>
+
+                                <p><strong><a href="http://nyshistoricnewspapers.org/newspapers/" target="_blank">NYS
+                                    Historic Newspapers</a></strong>.<br>
+                                    [http://nyshistoricnewspapers.org/newspapers/]; open access.<br>
+                                    Coverage: 1803 to date. Over 200 newspapers published in New York. Date coverage
+                                    varies widely by title. A few titles are current. Scanned page images; full-text
+                                    searchable (but <em>beware of the low quality of the OCR'd text that is used for
+                                        searching</em>). Browse the title list for precursors of today's <em>Ithaca
+                                        Journal</em>, including the <em>Ithaca Journal &amp; General Advertiser</em>
+                                    (8/8/1827 to 1847), the <em>Ithaca Journal Advertiser</em> (1847 to&nbsp;1866) and
+                                    the parallel title, the <em>Ithaca Daily Journal</em> (7/3/1872 to&nbsp;12/31/1913).
+                                </p>
+
+                                <p><strong>Paper of Record</strong>.<br>
+                                    [was http://cu.ola.paperofrecord.com/, now https://paperofrecord.hypernet.ca/]<br>
+                                    <span>Partially absorbed by <a href="http://news.google.com/archivesearch"
+                                                                   target="_blank">Google News Archive</a> [http://news.google.com/archivesearch]. Paper of Record consisted of the page PDFs of an oddball selection of newspaper titles mainly from Mexico, the U.S. and Canada in English and Spanish. </span>Paper
+                                    of Record has resurfaced as <a href="https://paperofrecord.hypernet.ca/">a
+                                        subscription database</a>. We do not subscribe.</p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/8949213" target="_blank">ProQuest
+                                    Archiver</a></strong>.<br>
+                                    [http://resolver.library.cornell.edu/misc/8949213]; open access.<br>
+                                    Indexing of a selection of major and regional newspapers including the <em>Los
+                                        Angeles Times</em>, the <em>New York Post</em>, the <em>Hartford Courant</em>,
+                                    the <em>Baltimore Sun</em>, <em>Newsday</em>, and the <em>Detroit Free Press</em>.
+                                    Date coverage varies widely. Plain text citations and usually article abstracts.
+                                    Recent full-text articles and some article images are free. Older content is offered
+                                    for purchase. <strong><a href="http://www.pqarchiver.com/titles.html">List of titles
+                                        and dates covered</a></strong>.</p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/7981672" target="_blank">ProQuest
+                                    Digital Microfilm</a></strong>.<br>
+                                    [http://resolver.library.cornell.edu/misc/7981672]; subscription.<br>
+                                    <em>The New York Times</em> (2008- ), <em>Wall Street Journal</em> (2008- ), and
+                                    <em>Washington Post</em> (2008- ), the <em> Chicago Tribune</em> (2008- ), and
+                                    the<em> Los Angeles Times</em> (2008- ). Plus 77&nbsp;additional newspapers from the
+                                    U.S. and Canada. Start dates for these titles varies from January 1, 2008 to January
+                                    1, 2011. Scanned pages from the microfilm versions. Not searchable.</p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/5071678" target="_blank">ProQuest
+                                    Historical Newspapers</a></strong>.<br>
+                                    [http://resolver.library.cornell.edu/misc/5071678]; subscription.<br>
+                                    <b>Coverage</b>: <em>Baltimore Sun</em> (1837-1991),&nbsp;<em
+                                            style="line-height: 20.8px;">Boston Globe</em><span
+                                            style="line-height: 20.8px;">&nbsp;(1872-1985),&nbsp;</span><em
+                                            style="line-height: 20.8px;">Chicago Tribune</em><span
+                                            style="line-height: 20.8px;">&nbsp;(1849-1993</span><span
+                                            style="line-height: 20.8px;">), <em>Hartford Courant</em> (1764-1991),&nbsp; <em
+                                            style="line-height: 20.8px;">Los Angeles Times</em><span
+                                            style="line-height: 20.8px;">&nbsp;(1881-1993</span><span
+                                            style="line-height: 20.8px;">),&nbsp;</span></span><em>New York Times</em>
+                                    (1851-2013), <em>New York Tribune</em> / <em>Herald&nbsp;Tribune</em> &nbsp;(1841-1962),&nbsp;<em>Wall
+                                        Street Journal</em> (1889-1999), and <em>Washington Post</em> (1877-2000).<br>
+                                    <b>African-American newspapers</b>: <em>Chicago Defender</em> (1910-1975), <em>New
+                                        York Amsterdam News</em> (1922-1993), and&nbsp;<em>Pittsburgh Courier</em>
+                                    (1911-2002).<br>
+                                    <b>International newspapers</b>: <em>Chinese Newspapers Collection</em> (1832-1953),
+                                    <em>Globe and Mail</em> [Toronto] (1844-2013), <em>Irish Times</em> / <em>Weekly
+                                        Irish Time</em>s [Dublin] (1859-2015), and <em>Times of India</em> (1838-2007).
+                                    PDFs scanned from microfilm. English. Advertising content is searchable. Search a
+                                    single newspaper or cross-search any combination of newspapers in this collection.
+                                </p>
+
+                                <p><strong>Russian Central Newspapers</strong>, see <a
+                                        href="http://resolver.library.cornell.edu/misc/4265835" target="_blank"><strong>EastView
+                                    Universal Database</strong></a>.</p>
+
+                                <p>
+                                    <a href="http://encompass.library.cornell.edu/cgi-bin/checkIP.cgi?access=gateway_standard&amp;url=http://cornell.summon.serialssolutions.com/#!/advanced"
+                                       target="_blank"><strong>Summon</strong> Advanced Search</a>&nbsp;(aka Articles
+                                    and Full Text on the library home page).<br>
+                                    [http://encompass.library.cornell.edu/cgi-bin/checkIP.cgi?access=gateway_standard&amp;url=http://cornell.summon.serialssolutions.com/];
+                                    subscription.<br>
+                                    Although not exclusively a newspaper searching database, Summon indexes a large
+                                    number of newspaper articles and provides links to the article full text online in
+                                    most cases. Limit to news content by clicking Newspaper Articles under Content Type.<br>
+                                    Coverage: about 1700 to date. In English and European languages. Format varies.</p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/3920979" target="_blank">Television
+                                    News Archive, Vanderbilt University</a></strong>.<br>
+                                    [http://resolver.library.cornell.edu/misc/3920979]; subscription.<br>
+                                    Coverage: 1968 to date. More than 30,000 individual network evening news broadcasts
+                                    from major U.S. national broadcast networks: ABC, CBS, NBC, and CNN, and more than
+                                    9,000 hours of special news-related programming including ABC's <em>Nightline</em>
+                                    (since 1989). Includes commercials, searchable by brand name. Streaming video,
+                                    transcripts. Requires RealPlayer media software (installed on public computers).<br>
+                                    See also <em>Meet the Press</em>, above.</p>
+
+                                <p><strong><a _blank="" href="http://www.letempsarchives.ch target=">[Le] Temps:
+                                    Archives historiques</a></strong>.<br>
+                                    [http://www.letempsarchives.ch]; open access.<br>
+                                    The J<em>ournal de Genève</em>, <em>Gazette de Lausanne</em> and the <em>Nouveau
+                                        Quotidien</em>, forerunners of<em> Le Temps</em>. Coverage: 1798 to 1998. PDFs.
+                                    In French. Search interface in French, German, English, Italian.</p>
+
+                                <p><a href="http://timarit.is/" target="_blank"><strong>Timarit.is</strong></a>.<br>
+                                    [http://timarit.is/]; open access.<br>
+                                    Coverage: Twelve Icelandic newspapers including <em>Morgunbaðið</em> (1913-2011) and
+                                    <em>DV: Dablaðið Vísir</em> (1981-2006). PDFs. Cross-searchable. In Icelandic.</p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/7563970" target="_blank">Times
+                                    [of London] Digital Archive (Monday - Saturday)</a> / <a
+                                        href="http://resolver.library.cornell.edu/misc/9254772" target="_blank">The
+                                    Sunday Times Digital Archive, 1822 - 2006</a> /&nbsp;<a
+                                        href="http://resolver.library.cornell.edu/misc/3851588" target="_blank">Times
+                                    Literary Supplement Historical Archive</a></strong>. Gale NewsVault;
+                                    subscription.<br>
+                                    Coverage: <em>Times</em>, 1785 to six&nbsp;years ago; <em>The Sunday Times</em>,
+                                    1822 - 2006; <em>Literary Supplement</em>, 1902&nbsp;- 2010. PDFs scanned from
+                                    microfilm. <strong>All three titles are cross-searchable (along with other Gale news
+                                        titles) in <a href="http://resolver.library.cornell.edu/misc/7782990"
+                                                      target="_blank">Gale NewsVault</a>, and in <a
+                                                href="http://resolver.library.cornell.edu/misc/8797135" target="_blank">Gale:
+                                            Primary Sources</a>, both described above.</strong></p>
+
+                                <p><strong><a href="https://archive.org/details/tv target=" _blank"="">TV News
+                                    Archive</a></strong> [part of Internet Archive].<br>
+                                    [https://archive.org/details/tv];<br>
+                                    Coverage: 2009 to yesterday. Streaming video. US TV news shows searchable using the
+                                    close-captioned text.</p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/9756151" target="_blank">US
+                                    Hispanic Newsstream</a></strong>.<br>
+                                    [http://resolver.library.cornell.edu/misc/9756151];<br>
+                                    Coverage varies by title: about 2004 to date. Plain text. In Spanish and
+                                    English.<br> 57 Hispanic newspapers, news wires, websites and blogs from US
+                                    publishers in both Spanish and English</p>
+
+                                <p><strong><a href="http://search.proquest.com/northeastnews1?accountid=10267"
+                                              target="_blank">US Northeast Newsstream</a></strong>.<br>
+                                    [http://search.proquest.com/northeastnews1?accountid=10267];<br>
+                                    Coverage varies by title: about 2004 to date. Plain text.<br>276 titles from
+                                    Connecticut, Delaware, Massachusetts, Maine, New Hampshire, New Jersey, New York,
+                                    Pennsylvania, Rhode Island, and Vermont.</p>
+
+                                <p><strong><a href="https://weimarstudies.wordpress.com/resources/online-periodicals/"
+                                              target="_blank">Weimar Studies Network: Resources</a></strong>.<br>
+                                    [https://weimarstudies.wordpress.com/resources/online-periodicals/]; open
+                                    access.<br>
+                                    Coverage varies by title: 1784-1930s. PDFs. Links to a large number of digitized
+                                    runs of German newspapers and some magazines. In German.</p>
+
+                                <p><strong><a href="http://resolver.library.cornell.edu/misc/2887918" target="_blank">World
+                                    News Connection</a></strong>.<br>
+                                    [http://resolver.library.cornell.edu/misc/2887918]; subscription.<br>
+                                    English translations of content from news sources worldwide. Coverage: 1995-2013.
+                                    (<strong>Coverage ended 12/31/2013</strong>). Includes television and radio. Plain
+                                    text. Continues <a href="http://resolver.library.cornell.edu/misc/6299594"
+                                                       target="_blank">Foreign Broadcast Information Service</a>.
+                                    Original content in many languages.</p>
+
+                                <p><strong><a href="http://infoweb.newsbank.com/?db=WHNPX" target="_blank">World
+                                    Newspaper Archive</a></strong>.<br>
+                                    [http://infoweb.newsbank.com/?db=WHNPX]; available to Center for Research Library
+                                    member institutions (Cornell is a member).<br>
+                                    <span>Coverage: around 1800 to 1922. </span><span>Three geographical modules: <a
+                                            href="http://www.crl.edu/collaborative-digitization/world-newspaper-archive/african-newspapers"
+                                            target="_blank">Africa</a></span>, <span> <a
+                                            href="http://www.crl.edu/collaborative-digitization/world-newspaper-archive/latin-america">Latin America</a>, and <a
+                                            href="http://www.crl.edu/collaborative-digitization/world-newspaper-archive/south-asian-newspapers">South Asia</a>. Coverage of other regions is forthcoming. Full text searchable PDFs. An important new source of primary news sources from these areas. In the languages of the original publications.</span>
+                                </p>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <hr>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
 </body>
 </html>

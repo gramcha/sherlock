@@ -1,0 +1,100 @@
+<html>
+<head>
+    <style>
+        .center {
+            margin: auto;
+            width: 60%;
+            border: 3px solid #73AD21;
+            padding: 10px;
+        }
+    </style>
+    <script
+            src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/bacon.js/0.7.95/Bacon.min.js">-->
+    <!--</script>-->
+    <script src="//player.ooyala.com/static/v4/production/latest/core.min.js"></script>
+    <script src="//player.ooyala.com/static/v4/production/latest/skin-plugin/html5-skin.min.js"></script>
+    <link rel="stylesheet" href="//player.ooyala.com/static/v4/production/latest/skin-plugin/html5-skin.min.css"/>
+    <script src="//player.ooyala.com/static/v4/production/latest/video-plugin/main_html5.min.js"></script>
+    <script src="//player.ooyala.com/static/v4/production/latest/video-plugin/bit_wrapper.min.js"></script>
+
+</head>
+<body>
+
+<div id="container" style="margin:0 auto;width:490px; height:auto"></div>
+<script>
+    console.log('1 plugin -',$(window).asEventStream('focus'));
+</script>
+<script src="http://localhost:3000/sherlock.js"></script>
+<script type="text/javascript">
+  function onCreate(player) {
+    console.log('subscribing to all events');
+      /*
+       * Subscribe to all events:
+       * this allows you to create logic
+       * based on multiple events.
+       */
+    player.mb.subscribe("*", 'all-events', function (eventName) {
+      if (eventName != OO.EVENTS.DOWNLOADING &&
+        eventName != OO.EVENTS.PLAYHEAD_TIME_CHANGED)
+        console.log(eventName);
+      console.log('player state - ' + player.getState());
+    });
+    player.mb.subscribe(OO.EVENTS.PLAYHEAD_TIME_CHANGED, 'OO.EVENTS.PLAYHEAD_TIME_CHANGED', function (eventName, info) {
+      console.log("OO.EVENTS.PLAYHEAD_TIME_CHANGED " + player.getState());
+      console.log("eventname ", eventName, " -", info);
+    });
+    player.mb.subscribe(OO.EVENTS.VC_VIDEO_ELEMENT_LOST_FOCUS, 'lost-focus-event', function (eventName, url, vid) {
+      console.log("palyer state  lost-focus-event " + player.getState());
+      console.log("eventname " + eventName + " url " + url + " vid " + vid);
+    });
+  }
+
+  OO.ready(function () {
+    console.log("ready");
+    var playerParam = {
+      //Find this under Account - Developers in Backlot
+      "pcode": "IycGoyOgSy6HP-yx47T66NFFtXdn",
+      //BACKLOT PLAYER ID
+      "playerBrandingId": "8fffc0703e764161bdf0008b7789d61e",
+      "showInAdControlBar": false,
+      // "autoplay":true,
+      "skin": {
+        "config": "http://player.ooyala.com/static/v4/production/latest/skin-plugin/skin.json" //"prod_latest.skin.json" //no error but ad is not displaying.
+//        "config": "https://raw.githubusercontent.com/PlaybackWebTest/JsonFiles/PlayerSkin/stickytest.json" //"prod_latest.skin.json" //no error but ad is not displaying.
+
+      },
+      onCreate: window.onCreate,
+      debug: true,
+      // "videoplaza-ads-manager": {
+      //   pulse_host: "http://vp-validation.videoplaza.tv", //REPLACE WITH OWN HOST
+      //   pulse_tags: "standard,tag2", //REPLACE WITH DESIRED TAGS OR REMOVE IF NOT NEEDED
+      //   pulse_category: "validation" //REPLACE WITH A CATEGORY ID OR CATEGORY ALIAS
+      // },
+      "enableDebugTools": {
+        "startDebugStateMachine": "all",
+      },
+      // "showInAdControlBar":true,
+      // "showLinearAdSkipButton":true,
+      // "linearAdSkipButtonStartTime":1
+      "embedToken": "//player.ooyala.com/sas/embed_token/IycGoyOgSy6HP-yx47T66NFFtXdn/pxZnhtYjE6QtDxaRxY624rgqJP-kc0l7?api_key=IycGoyOgSy6HP-yx47T66NFFtXdn.V_Yu7&expires=1506815027&signature=amvZnV7tjV7ZtOMOGsvIaZU8LsqScghJePp7vDnrUmA&override_syndication_group=override_synd_groups_in_backlot"
+    };
+
+
+
+    window.pp = OO.Player.create('container', "I0anFwYjE6rEHjyW7q8BreRqOhBGXObr", playerParam);//cc supported embed code pxZnhtYjE6QtDxaRxY624rgqJP-kc0l7 with blue color setting in backlot
+
+    window.intialBoundary = document.getElementById('container').getBoundingClientRect();
+
+
+  });
+  console.log("bacon");
+
+
+</script>
+
+
+</body>
+</html>
