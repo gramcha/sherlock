@@ -2,8 +2,7 @@
  * Created by gramachandran on 09/11/17.
  */
 OO.plugin("sherlock", function (OO, _, JQ, W) {
-  console.log("plugin -", JQ);
-  console.log(JQ("#container"));
+
   /**
    * Sherlock Plugin Module
    *
@@ -25,10 +24,8 @@ OO.plugin("sherlock", function (OO, _, JQ, W) {
   // public functions of the module object
   PlugIn.sherlock.prototype = {
     init: function () {
-      // this.mb.subscribe(OO.EVENTS.VC_VIDEO_ELEMENT_CREATED, 'Initialise Player', _.bind(this.onVideoElementCreated, this));
       console.log('Initialising sherlock plugin for ooyala player...');
-
-      // jQuery
+      // jQuery - pull for Bacon
       JQ.getScript('https://cdnjs.cloudflare.com/ajax/libs/bacon.js/0.7.95/Bacon.min.js', function () {
         {
           resetFeed();
